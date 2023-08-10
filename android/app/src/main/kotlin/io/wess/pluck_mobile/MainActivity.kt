@@ -1,0 +1,6 @@
+package io.wess.pluck_mobile
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}
