@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pluck_mobile/routes/sign_in.dart';
+import 'package:pluck_mobile/routes/sign_up.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -25,10 +26,10 @@ class App extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
         useMaterial3: true,
       ),
-      home: const SignIn(),
+      home: const SignUp(),
     );
   }
 }
