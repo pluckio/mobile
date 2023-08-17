@@ -1,4 +1,8 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pluck_mobile/notifiers/auth.dart';
+import 'package:provider/provider.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -61,9 +65,30 @@ class _SignInState extends State<SignIn> {
                   child: const Text('No account? Register!'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    print(
-                        '${_emailController.value.text}//${_passwordController.value.text}');
+                  onPressed: () async {
+                    final auth = context.read<Auth>();
+                    final messenger = ScaffoldMessenger.of(context);
+                    final router = GoRouter.of(context);
+                    String error = '';
+
+                    try {
+                      await auth.signIn(
+                        email: _emailController.value.text,
+                        password: _passwordController.value.text,
+                      );
+                      router.go('/');
+                      // router.push('/');
+                    } on AppwriteException catch (e) {
+                      error = e.message ?? 'Something went wrong!';
+                    } catch (e) {
+                      error = e.toString();
+                    }
+
+                    if (error.isNotEmpty) {
+                      messenger.showSnackBar(SnackBar(
+                        content: Text(error),
+                      ));
+                    }
                   },
                   child: const Text('Sign In'),
                 ),

@@ -51,7 +51,14 @@ class Auth extends ChangeNotifier {
     }
   }
 
-  void signOut() {
-    notifyListeners();
+  Future<void> signOut() async {
+    try {
+      await _account.deleteSession(sessionId: 'current');
+      _user = null;
+      notifyListeners();
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 }
