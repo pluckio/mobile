@@ -1,18 +1,19 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:pluck_mobile/notifiers/auth.dart';
 import 'package:provider/provider.dart';
 
-class SignIn extends StatefulWidget {
-  const SignIn({super.key});
+import '../notifiers/auth.dart';
+
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
-  State<SignIn> createState() => _SignInState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignUpState extends State<SignUp> {
   final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
@@ -31,7 +32,7 @@ class _SignInState extends State<SignIn> {
             Row(
               children: [
                 Text(
-                  'Sign In',
+                  'Sign Up',
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
               ],
@@ -44,6 +45,14 @@ class _SignInState extends State<SignIn> {
               ),
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
+            ),
+            gap,
+            TextFormField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Username',
+              ),
+              controller: _usernameController,
             ),
             gap,
             TextFormField(
@@ -62,22 +71,21 @@ class _SignInState extends State<SignIn> {
                     print(
                         '${_emailController.value.text}//${_passwordController.value.text}');
                   },
-                  child: const Text('No account? Register!'),
+                  child: const Text('Have an account? Login!'),
                 ),
                 ElevatedButton(
                   onPressed: () async {
                     final auth = context.read<Auth>();
                     final messenger = ScaffoldMessenger.of(context);
-                    final router = GoRouter.of(context);
                     String error = '';
 
                     try {
-                      await auth.signIn(
+                      await auth.signUp(
                         email: _emailController.value.text,
+                        username: _usernameController.value.text,
                         password: _passwordController.value.text,
                       );
-                      router.go('/');
-                      // router.push('/');
+                      print(auth.user?.email);
                     } on AppwriteException catch (e) {
                       error = e.message ?? 'Something went wrong!';
                     } catch (e) {
@@ -90,7 +98,7 @@ class _SignInState extends State<SignIn> {
                       ));
                     }
                   },
-                  child: const Text('Sign In'),
+                  child: const Text('Sign Up'),
                 ),
               ],
             )
