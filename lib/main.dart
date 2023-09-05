@@ -1,10 +1,11 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
-import 'package:pluck_mobile/app.dart';
-import 'package:pluck_mobile/notifiers/auth.dart';
 import 'package:provider/provider.dart';
 
+import 'app.dart';
 import 'constants.dart';
+import 'notifiers/auth.dart';
+import 'notifiers/photos.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +16,11 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<Auth>(create: (_) => Auth(client)),
+        ChangeNotifierProvider<Auth>(create: (context) => Auth(client)),
+        ChangeNotifierProvider<Photos>(create: (context) {
+          final auth = context.read<Auth>();
+          return Photos(client: client, auth: auth);
+        }),
       ],
       child: const App(),
     ),

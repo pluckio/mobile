@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pluck_mobile/notifiers/auth.dart';
-import 'package:pluck_mobile/router.dart';
 import 'package:provider/provider.dart';
+
+import 'notifiers/auth.dart';
+import 'router.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -59,8 +60,8 @@ class _AppState extends State<App> {
           useMaterial3: true,
         ),
         home: Scaffold(
-          appBar: AppBar(title: Text('...')),
-          body: CircularProgressIndicator(),
+          appBar: AppBar(title: const Text('...')),
+          body: const CircularProgressIndicator(),
         ),
       );
     }
