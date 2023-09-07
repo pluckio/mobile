@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pluck_mobile/routes/sign_in.dart';
-import 'package:pluck_mobile/routes/sign_up.dart';
-import 'package:pluck_mobile/routes/home.dart';
 import 'package:provider/provider.dart';
 
 import 'notifiers/auth.dart';
+import 'routes/home.dart';
+import 'routes/sign_in.dart';
+import 'routes/sign_up.dart';
 
 // GoRouter configuration
 final router = GoRouter(
@@ -17,6 +17,7 @@ final router = GoRouter(
       return null;
     }
   },
+  initialLocation: '/signIn',
   routes: [
     GoRoute(
       path: '/',
