@@ -17,6 +17,7 @@ final router = GoRouter(
       return null;
     }
   },
+  initialLocation: '/signIn',
   routes: [
     GoRoute(
       path: '/',

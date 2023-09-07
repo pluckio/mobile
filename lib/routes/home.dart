@@ -32,11 +32,9 @@ class _HomeState extends State<Home> {
                 final router = GoRouter.of(context);
                 await auth.signOut();
 
-                // print('canPop?: ${router.canPop()}');
-                // while (router.canPop()) {
-                //   print('popping');
-                //   router.pop();
-                // }
+                while (router.canPop()) {
+                  router.pop();
+                }
               },
               icon: const Icon(Icons.logout),
             ),

@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../notifiers/auth.dart';
@@ -76,6 +77,7 @@ class _SignUpState extends State<SignUp> {
                 ElevatedButton(
                   onPressed: () async {
                     final auth = context.read<Auth>();
+                    final router = GoRouter.of(context);
                     final messenger = ScaffoldMessenger.of(context);
                     String error = '';
 
@@ -86,6 +88,7 @@ class _SignUpState extends State<SignUp> {
                         password: _passwordController.value.text,
                       );
                       print(auth.user?.email);
+                      router.push('/');
                     } on AppwriteException catch (e) {
                       error = e.message ?? 'Something went wrong!';
                     } catch (e) {
