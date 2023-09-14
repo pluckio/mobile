@@ -1,17 +1,21 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-import '/data/photo.dart';
 import '/constants.dart';
+import '/data/photo.dart';
 import 'auth.dart';
 
 class Photos extends ChangeNotifier {
   final Databases _databases;
+  final Storage _storage;
   List<Photo> _photos = [];
   final Auth auth;
+  XFile? newPhoto;
 
   Photos({required Client client, required this.auth})
-      : _databases = Databases(client);
+      : _databases = Databases(client),
+        _storage = Storage(client);
 
   List<Photo> get photos => _photos;
 
@@ -31,8 +35,45 @@ class Photos extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       rethrow;
     }
+  }
+
+  void setNewPhoto(XFile photo) {
+    newPhoto = photo;
+    notifyListeners();
+  }
+
+  Future<void> upload(String name, String description) async {
+    if (newPhoto == null) {
+      throw Exception('Please select a photo');
+    }
+
+    // create the file in the storage bucket
+    final file = await _storage.createFile(
+      bucketId: Appwrite.bucket,
+      fileId: ID.unique(),
+      file: InputFile.fromPath(path: newPhoto!.path),
+    );
+
+    // create the document in photos collection
+    final photo = Photo(
+      id: ID.unique(),
+      name: name,
+      fileId: file.$id,
+      description: description,
+      isPrivate: false,
+      slug: name.toLowerCase().replaceAll(' ', '_'),
+      userId: auth.user!.$id,
+      username: auth.user!.name,
+    );
+    await _databases.createDocument(
+      databaseId: Appwrite.database,
+      collectionId: Appwrite.collectionPhotos,
+      documentId: photo.id,
+      data: photo.toData(),
+    );
+    return init();
   }
 }

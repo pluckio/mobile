@@ -15,7 +15,7 @@ class Auth extends ChangeNotifier {
       _user = await _account.get();
       notifyListeners();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       rethrow;
     }
   }
@@ -28,7 +28,7 @@ class Auth extends ChangeNotifier {
       );
       await init();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       rethrow;
     }
   }
@@ -46,7 +46,7 @@ class Auth extends ChangeNotifier {
       );
       await signIn(email: email, password: password);
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       rethrow;
     }
   }
@@ -57,7 +57,7 @@ class Auth extends ChangeNotifier {
       _user = null;
       notifyListeners();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       rethrow;
     }
   }

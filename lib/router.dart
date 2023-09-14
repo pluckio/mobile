@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'notifiers/auth.dart';
 import 'routes/home.dart';
+import 'routes/new.dart';
 import 'routes/sign_in.dart';
 import 'routes/sign_up.dart';
 
@@ -30,6 +31,10 @@ final router = GoRouter(
     GoRoute(
       path: '/signUp',
       builder: (context, state) => const SignUp(),
+    ),
+    GoRoute(
+      path: '/new',
+      builder: (context, state) => const New(),
     ),
   ],
 );
