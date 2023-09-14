@@ -94,7 +94,7 @@ class _SignInState extends State<SignIn> {
               children: [
                 TextButton(
                   onPressed: () {
-                    print(
+                    debugPrint(
                         '${_emailController.value.text}//${_passwordController.value.text}');
                   },
                   child: const Text('No account? Register!'),

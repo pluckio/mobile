@@ -69,7 +69,7 @@ class _SignUpState extends State<SignUp> {
               children: [
                 TextButton(
                   onPressed: () {
-                    print(
+                    debugPrint(
                         '${_emailController.value.text}//${_passwordController.value.text}');
                   },
                   child: const Text('Have an account? Login!'),
@@ -87,7 +87,7 @@ class _SignUpState extends State<SignUp> {
                         username: _usernameController.value.text,
                         password: _passwordController.value.text,
                       );
-                      print(auth.user?.email);
+                      debugPrint(auth.user?.email);
                       router.push('/');
                     } on AppwriteException catch (e) {
                       error = e.message ?? 'Something went wrong!';

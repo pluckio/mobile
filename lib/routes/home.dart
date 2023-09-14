@@ -1,11 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../constants.dart';
-import '../notifiers/auth.dart';
-import '../notifiers/photos.dart';
+import '/constants.dart';
+import '/notifiers/auth.dart';
+import '/notifiers/photos.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,6 +16,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final ImagePicker picker = ImagePicker();
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +44,57 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
+      floatingActionButton: Builder(builder: (context) {
+        return FloatingActionButton(
+          onPressed: () async {
+            Scaffold.of(context).showBottomSheet(
+              (context) => Container(
+                height: 200,
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.camera_alt),
+                      title: const Text('Camera'),
+                      onTap: () async {
+                        debugPrint('tap Camera');
+                        final photosNotifier = context.read<Photos>();
+                        final router = GoRouter.of(context);
+
+                        final XFile? image =
+                            await picker.pickImage(source: ImageSource.camera);
+                        if (image != null) {
+                          debugPrint(image.path);
+                          photosNotifier.setNewPhoto(image);
+                          router.push('/new');
+                        }
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.photo),
+                      title: const Text('Gallery'),
+                      onTap: () async {
+                        debugPrint('tap Gallery');
+                        final photosNotifier = context.read<Photos>();
+                        final router = GoRouter.of(context);
+
+                        final XFile? image =
+                            await picker.pickImage(source: ImageSource.gallery);
+                        if (image != null) {
+                          debugPrint(image.path);
+                          photosNotifier.setNewPhoto(image);
+                          router.push('/new');
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          child: const Icon(Icons.add),
+        );
+      }),
       body: Consumer<Photos>(
         builder: (context, photos, child) {
           return GridView.builder(
@@ -52,7 +106,7 @@ class _HomeState extends State<Home> {
               final photo = photos.photos[index];
               final photoUrl =
                   '${Appwrite.endpoint}/storage/buckets/${Appwrite.bucket}/files/${photo.fileId}/preview?project=${Appwrite.project}';
-              print(photoUrl);
+              debugPrint(photoUrl);
               return Card(
                 child: GridTile(
                   header: GridTileBar(

@@ -1,34 +1,36 @@
 import 'dart:convert';
 
+import '/constants.dart';
+
 class Photo {
   final String name;
-  final String description;
-  final bool isPrivate;
+  final String? description;
+  final bool? isPrivate;
   final String username;
   final String slug;
   final String fileId;
   final String userId;
   final String id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final List<String> permissions;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final List<String>? permissions;
   final String collectionId;
   final String databaseId;
 
   Photo({
     required this.name,
-    required this.description,
-    required this.isPrivate,
+    this.description,
+    this.isPrivate,
     required this.username,
     required this.slug,
     required this.fileId,
     required this.userId,
     required this.id,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.permissions,
-    required this.collectionId,
-    required this.databaseId,
+    this.createdAt,
+    this.updatedAt,
+    this.permissions,
+    this.collectionId = Appwrite.collectionPhotos,
+    this.databaseId = Appwrite.database,
   });
 
   Photo copyWith({
@@ -82,19 +84,40 @@ class Photo {
         databaseId: json['\u0024databaseId'],
       );
 
-  Map<String, dynamic> toMap() => {
-        'name': name,
-        'description': description,
-        'isPrivate': isPrivate,
-        'username': username,
-        'slug': slug,
-        'fileId': fileId,
-        'userId': userId,
-        '\u0024id': id,
-        '\u0024createdAt': createdAt.toIso8601String(),
-        '\u0024updatedAt': updatedAt.toIso8601String(),
-        '\u0024permissions': List<dynamic>.from(permissions.map((x) => x)),
-        '\u0024collectionId': collectionId,
-        '\u0024databaseId': databaseId,
-      };
+  Map<String, dynamic> toMap() {
+    final data = toData();
+
+    data['\$id'] = id;
+    if (createdAt != null) {
+      data['\$createdAt'] = createdAt?.toIso8601String();
+    }
+    if (updatedAt != null) {
+      data['\$updatedAt'] = updatedAt?.toIso8601String();
+    }
+    if (permissions != null) {
+      data['\$permissions'] = List<String>.from(permissions!.map((x) => x));
+    }
+    data['\$databaseId'] = databaseId;
+    data['\$collectionId'] = collectionId;
+
+    return data;
+  }
+
+  Map<String, dynamic> toData() {
+    final data = <String, dynamic>{
+      'name': name,
+      'username': username,
+      'slug': slug,
+      'fileId': fileId,
+      'userId': userId,
+    };
+
+    if (description != null) {
+      data['description'] = description;
+    }
+    if (isPrivate != null) {
+      data['isPrivate'] = isPrivate;
+    }
+    return data;
+  }
 }
