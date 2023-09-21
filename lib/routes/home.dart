@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import '/constants.dart';
 import '/notifiers/photos.dart';
 import '../data/photo.dart';
+import '../notifiers/auth.dart';
 import '../widgets/sign_out_button.dart';
 
 class Home extends StatefulWidget {
@@ -113,8 +114,8 @@ class _HomeState extends State<Home> {
           child: const Icon(Icons.add),
         );
       }),
-      body: Consumer<Photos>(
-        builder: (context, photos, child) {
+      body: Consumer2<Photos, Auth>(
+        builder: (context, photos, auth, child) {
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -126,21 +127,30 @@ class _HomeState extends State<Home> {
                   '${Appwrite.endpoint}/storage/buckets/${Appwrite.bucket}/files/${photo.fileId}/preview?project=${Appwrite.project}';
               return Card(
                 child: GridTile(
-                  header: GridTileBar(
-                    leading: const CircleAvatar(
-                      child: Text('WC'),
+                  header: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
                     ),
-                    title: Text(
-                      photo.name,
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                    trailing: IconButton(
-                      icon: _deleting.contains(photo.id)
-                          ? const CircularProgressIndicator()
-                          : const Icon(Icons.delete, color: Colors.black),
-                      onPressed: _deleting.contains(photo.id)
-                          ? null
-                          : () => delete(photo),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          child: Text(auth.user?.name.substring(0, 1) ?? ''),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Text(photo.name),
+                          ),
+                        ),
+                        IconButton(
+                          icon: _deleting.contains(photo.id)
+                              ? const CircularProgressIndicator()
+                              : const Icon(Icons.delete),
+                          onPressed: _deleting.contains(photo.id)
+                              ? null
+                              : () => delete(photo),
+                        ),
+                      ],
                     ),
                   ),
                   footer: Row(
