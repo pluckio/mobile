@@ -18,6 +18,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final ImagePicker picker = ImagePicker();
+  final Set<String> _deleting = {};
 
   @override
   void initState() {
@@ -107,7 +108,6 @@ class _HomeState extends State<Home> {
               final photo = photos.photos[index];
               final photoUrl =
                   '${Appwrite.endpoint}/storage/buckets/${Appwrite.bucket}/files/${photo.fileId}/preview?project=${Appwrite.project}';
-              debugPrint(photoUrl);
               return Card(
                 child: GridTile(
                   header: GridTileBar(
@@ -119,10 +119,32 @@ class _HomeState extends State<Home> {
                       style: const TextStyle(color: Colors.black),
                     ),
                     trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.black),
-                      onPressed: () async {
-                        // await photos.delete(photo);
-                      },
+                      icon: _deleting.contains(photo.id)
+                          ? const CircularProgressIndicator()
+                          : const Icon(Icons.delete, color: Colors.black),
+                      onPressed: _deleting.contains(photo.id)
+                          ? null
+                          : () async {
+                              setState(() {
+                                _deleting.add(photo.id);
+                              });
+
+                              final messenger = ScaffoldMessenger.of(context);
+
+                              try {
+                                await photos.delete(photo);
+                              } catch (e) {
+                                messenger.showSnackBar(
+                                  SnackBar(
+                                    content: Text('Failed to delete photo: $e'),
+                                  ),
+                                );
+                              } finally {
+                                setState(() {
+                                  _deleting.remove(photo.id);
+                                });
+                              }
+                            },
                     ),
                   ),
                   footer: Row(
