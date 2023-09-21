@@ -76,4 +76,20 @@ class Photos extends ChangeNotifier {
     );
     return init();
   }
+
+  Future<void> delete(Photo photo) async {
+    final futures = <Future>[];
+    futures.add(_storage.deleteFile(
+      bucketId: Appwrite.bucket,
+      fileId: photo.fileId,
+    ));
+    futures.add(_databases.deleteDocument(
+      databaseId: Appwrite.database,
+      collectionId: Appwrite.collectionPhotos,
+      documentId: photo.id,
+    ));
+
+    await Future.wait(futures);
+    return init();
+  }
 }
