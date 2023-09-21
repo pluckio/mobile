@@ -21,7 +21,9 @@ class _AppState extends State<App> {
     return MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.grey,
+        ),
         useMaterial3: true,
       ),
       routerConfig: router,
