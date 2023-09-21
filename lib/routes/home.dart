@@ -6,8 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '/constants.dart';
-import '/notifiers/auth.dart';
 import '/notifiers/photos.dart';
+import '../data/photo.dart';
+import '../widgets/sign_out_button.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -26,24 +27,57 @@ class _HomeState extends State<Home> {
     context.read<Photos>().init();
   }
 
+  void newPhoto(ImageSource source) async {
+    final photosNotifier = context.read<Photos>();
+    final router = GoRouter.of(context);
+
+    final XFile? image = await picker.pickImage(source: source);
+    if (image != null) {
+      debugPrint(image.path);
+      photosNotifier.setNewPhoto(image);
+      router.push('/new');
+    }
+  }
+
+  void delete(Photo photo) async {
+    setState(() {
+      _deleting.add(photo.id);
+    });
+
+    final photosNotifier = context.read<Photos>();
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      await photosNotifier.delete(photo);
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete photo: $e'),
+        ),
+      );
+    } finally {
+      setState(() {
+        _deleting.remove(photo.id);
+      });
+    }
+  }
+
+  void share(Photo photo) {
+    debugPrint('share');
+
+    final url =
+        'https://pluck-pi.vercel.app/user/${photo.username}/${photo.slug}';
+
+    Share.share(url, subject: photo.name);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              final auth = context.read<Auth>();
-              final router = GoRouter.of(context);
-              await auth.signOut();
-
-              while (router.canPop()) {
-                router.pop();
-              }
-            },
-            icon: const Icon(Icons.logout),
-          ),
+        actions: const [
+          SignOutButton(),
         ],
       ),
       floatingActionButton: Builder(builder: (context) {
@@ -60,16 +94,7 @@ class _HomeState extends State<Home> {
                       title: const Text('Camera'),
                       onTap: () async {
                         debugPrint('tap Camera');
-                        final photosNotifier = context.read<Photos>();
-                        final router = GoRouter.of(context);
-
-                        final XFile? image =
-                            await picker.pickImage(source: ImageSource.camera);
-                        if (image != null) {
-                          debugPrint(image.path);
-                          photosNotifier.setNewPhoto(image);
-                          router.push('/new');
-                        }
+                        newPhoto(ImageSource.camera);
                       },
                     ),
                     ListTile(
@@ -77,16 +102,7 @@ class _HomeState extends State<Home> {
                       title: const Text('Gallery'),
                       onTap: () async {
                         debugPrint('tap Gallery');
-                        final photosNotifier = context.read<Photos>();
-                        final router = GoRouter.of(context);
-
-                        final XFile? image =
-                            await picker.pickImage(source: ImageSource.gallery);
-                        if (image != null) {
-                          debugPrint(image.path);
-                          photosNotifier.setNewPhoto(image);
-                          router.push('/new');
-                        }
+                        newPhoto(ImageSource.gallery);
                       },
                     ),
                   ],
@@ -124,27 +140,7 @@ class _HomeState extends State<Home> {
                           : const Icon(Icons.delete, color: Colors.black),
                       onPressed: _deleting.contains(photo.id)
                           ? null
-                          : () async {
-                              setState(() {
-                                _deleting.add(photo.id);
-                              });
-
-                              final messenger = ScaffoldMessenger.of(context);
-
-                              try {
-                                await photos.delete(photo);
-                              } catch (e) {
-                                messenger.showSnackBar(
-                                  SnackBar(
-                                    content: Text('Failed to delete photo: $e'),
-                                  ),
-                                );
-                              } finally {
-                                setState(() {
-                                  _deleting.remove(photo.id);
-                                });
-                              }
-                            },
+                          : () => delete(photo),
                     ),
                   ),
                   footer: Row(
@@ -163,14 +159,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {
-                          debugPrint('share');
-
-                          final url =
-                              'https://pluck-pi.vercel.app/user/${photo.username}/${photo.slug}';
-
-                          Share.share(url, subject: photo.name);
-                        },
+                        onPressed: () => share(photo),
                         child: const Row(
                           children: [
                             Icon(Icons.share),
