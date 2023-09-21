@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '/constants.dart';
 import '/notifiers/auth.dart';
@@ -113,18 +114,58 @@ class _HomeState extends State<Home> {
                     leading: const CircleAvatar(
                       child: Text('WC'),
                     ),
-                    title: Text(photo.name),
+                    title: Text(
+                      photo.name,
+                      style: const TextStyle(color: Colors.black),
+                    ),
                     trailing: IconButton(
-                      icon: const Icon(Icons.delete),
+                      icon: const Icon(Icons.delete, color: Colors.black),
                       onPressed: () async {
                         // await photos.delete(photo);
                       },
                     ),
                   ),
-                  child: CachedNetworkImage(
-                    imageUrl: photoUrl,
-                    placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(),
+                  footer: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          debugPrint('like');
+                        },
+                        child: const Row(
+                          children: [
+                            Icon(Icons.favorite),
+                            SizedBox(width: 2.0),
+                            Text('Likes: 0'),
+                          ],
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          debugPrint('share');
+
+                          final url =
+                              'https://pluck-pi.vercel.app/user/${photo.username}/${photo.slug}';
+
+                          Share.share(url, subject: photo.name);
+                        },
+                        child: const Row(
+                          children: [
+                            Icon(Icons.share),
+                            SizedBox(width: 2.0),
+                            Text('Share'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 48.0),
+                    child: CachedNetworkImage(
+                      imageUrl: photoUrl,
+                      placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
                   ),
                 ),
