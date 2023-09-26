@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'app.dart';
 import 'constants.dart';
 import 'notifiers/auth.dart';
+import 'notifiers/likes.dart';
 import 'notifiers/photos.dart';
 
 void main() {
@@ -20,6 +21,10 @@ void main() {
         ChangeNotifierProvider<Photos>(create: (context) {
           final auth = context.read<Auth>();
           return Photos(client: client, auth: auth);
+        }),
+        ChangeNotifierProvider<Likes>(create: (context) {
+          final auth = context.read<Auth>();
+          return Likes(client: client, auth: auth);
         }),
       ],
       child: const App(),

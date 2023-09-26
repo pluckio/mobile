@@ -1,14 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '/constants.dart';
 import '/notifiers/photos.dart';
 import '../data/photo.dart';
 import '../notifiers/auth.dart';
+import '../widgets/photo_card.dart';
 import '../widgets/sign_out_button.dart';
 
 class Home extends StatefulWidget {
@@ -123,74 +122,7 @@ class _HomeState extends State<Home> {
             itemCount: photos.photos.length,
             itemBuilder: (BuildContext context, int index) {
               final photo = photos.photos[index];
-              final photoUrl =
-                  '${Appwrite.endpoint}/storage/buckets/${Appwrite.bucket}/files/${photo.fileId}/preview?project=${Appwrite.project}';
-              return Card(
-                child: GridTile(
-                  header: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          child: Text(auth.user?.name.substring(0, 1) ?? ''),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Text(photo.name),
-                          ),
-                        ),
-                        IconButton(
-                          icon: _deleting.contains(photo.id)
-                              ? const CircularProgressIndicator()
-                              : const Icon(Icons.delete),
-                          onPressed: _deleting.contains(photo.id)
-                              ? null
-                              : () => delete(photo),
-                        ),
-                      ],
-                    ),
-                  ),
-                  footer: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          debugPrint('like');
-                        },
-                        child: const Row(
-                          children: [
-                            Icon(Icons.favorite),
-                            SizedBox(width: 2.0),
-                            Text('Likes: 0'),
-                          ],
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => share(photo),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.share),
-                            SizedBox(width: 2.0),
-                            Text('Share'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 48.0),
-                    child: CachedNetworkImage(
-                      imageUrl: photoUrl,
-                      placeholder: (context, url) => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  ),
-                ),
-              );
+              return PhotoCard(photo: photo);
             },
           );
         },
