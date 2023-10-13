@@ -93,12 +93,13 @@ class _PhotoCardState extends State<PhotoCard> {
                 TextButton(
                   onPressed: () {
                     debugPrint('like');
+                    likes.likePhoto(widget.photo);
                   },
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(Icons.favorite),
-                      SizedBox(width: 2.0),
-                      Text('Likes: 0'),
+                      const Icon(Icons.favorite),
+                      const SizedBox(width: 2.0),
+                      Text('Likes: ${likes.getLikeCount(widget.photo)}'),
                     ],
                   ),
                 ),

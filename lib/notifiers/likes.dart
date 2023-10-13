@@ -14,6 +14,15 @@ class Likes extends ChangeNotifier {
   Likes({required Client client, required this.auth})
       : _databases = Databases(client);
 
+  int getLikeCount(Photo photo) {
+    final likes = _likesByPhoto[photo.id];
+    if (likes == null) {
+      return 0;
+    }
+
+    return likes.length;
+  }
+
   Future<void> getLikes(Photo photo) async {
     try {
       final documentList = await _databases.listDocuments(
